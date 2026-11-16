@@ -373,6 +373,19 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
       </div>
       <div class="card"><h2>Today's agenda</h2><ul class="list" id="agenda"></ul></div>
     </div>
+    <div class="card" id="dataCard">
+      <div class="card-head"><h2>Move or back up your data</h2><a class="btn small" id="openSite" href="https://danielborisevich.github.io/life-tracker" target="_blank" rel="noopener">Open the website</a></div>
+      <p class="muted small" id="dataHelp">Copy everything from this version, then paste it into the other one. Pasting replaces what's there.</p>
+      <div class="row"><button class="btn primary" type="button" id="copyData">Copy all my data</button></div>
+      <textarea id="copyOut" rows="3" readonly hidden style="width:100%;font-family:var(--font-mono);font-size:12px" aria-label="Your data"></textarea>
+      <details><summary class="small" style="cursor:pointer;font-weight:700">Paste data from another copy</summary>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <textarea id="pasteData" rows="4" style="width:100%;font-family:var(--font-mono);font-size:12px" placeholder="Paste here" aria-label="Paste data"></textarea>
+          <div><button class="btn" type="button" id="loadData">Replace my data with this</button></div>
+          <p class="small" id="loadMsg" role="status"></p>
+        </div>
+      </details>
+    </div>
   </section>
 
   <!-- STUDY -->
@@ -1765,6 +1778,22 @@ async function loadNews(){
     else renderNews(null);
   }catch(e){clearTimeout(slow);if(!$('#brief').children.length)renderNews(null);}
 }
+
+
+/* ---------- data transfer ---------- */
+if(!inClaude){$('#openSite').hidden=true;$('#dataHelp').textContent='Paste the data you copied from the Claude version below to bring everything over. You can also copy a backup from here.';}
+$('#copyData').addEventListener('click',async()=>{
+  const data=JSON.stringify({lifeTracker:1,at:new Date().toISOString(),data:Object.fromEntries(KEYS.map(k=>[k,S[k]]))});
+  const out=$('#copyOut');out.value=data;
+  try{await navigator.clipboard.writeText(data);out.hidden=true;toast('Copied. Now paste it into the other version.');}
+  catch(e){out.hidden=false;out.focus();out.select();toast('Select all the text in the box and copy it.');}
+});
+$('#loadData').addEventListener('click',()=>{
+  let o;try{o=JSON.parse($('#pasteData').value.trim());}catch(e){$('#loadMsg').textContent='That doesn’t look like Life Tracker data. Copy it again and paste the whole thing.';return;}
+  const d=o&&o.data;if(!d||!KEYS.some(k=>k in d)){$('#loadMsg').textContent='That doesn’t look like Life Tracker data.';return;}
+  KEYS.forEach(k=>{if(d[k]!==undefined){S[k]=d[k];save(k);}});
+  hadLocal=true;renderAll();$('#pasteData').value='';$('#loadMsg').textContent='';toast('All your data is here now.');
+});
 
 /* ---------- boot ---------- */
 function renderAll(){applySkin();renderProductivity();renderMethodChips();if(!T.running)resetTimer();renderCalc();renderCards();renderSessions();renderTodos();renderCalendar();renderAllGym();fillCatSelect();renderFinance();}

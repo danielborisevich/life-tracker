@@ -726,7 +726,7 @@ let hadLocal=false;
 try{const raw=localStorage.getItem(LS);if(raw){const o=JSON.parse(raw);for(const k of KEYS)if(o[k]!==undefined)S[k]=o[k];hadLocal=true;}}catch(e){}
 function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(S));}catch(e){}}
 
-const SUPA_URL='%%SUPA_URL%%',SUPA_KEY='%%SUPA_KEY%%';
+const SUPA_URL='https://ibzldybpisnbfwknaccz.supabase.co',SUPA_KEY='sb_publishable_QoWpeq--js7GCNcbvhWVJg_XtjSEp_P';
 const supaConfigured=()=>SUPA_URL.startsWith('https://')&&SUPA_KEY.length>20;
 const inClaude=!!(window.claude&&window.claude.use);
 let DB=null,UID=null,SB=null,SBUID=null;const writing={},dirty={},wTimers={};

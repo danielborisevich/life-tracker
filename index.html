@@ -2038,7 +2038,13 @@ function renderNews(n){
 async function loadNews(){
   try{const c=localStorage.getItem(LS+'.news');if(c)renderNews(JSON.parse(c));}catch(e){}
   if(!DB){
-    try{const r=await fetch('daily.json?t='+Date.now(),{cache:'no-store'});if(r.ok){const n=await r.json();renderNews(n);try{localStorage.setItem(LS+'.news',JSON.stringify(n));}catch(e){}return;}}catch(e){}
+    let n=null;
+    try{const r=await fetch('daily.json?t='+Date.now(),{cache:'no-store'});if(r.ok)n=await r.json();}catch(e){}
+    if((!n||n.updated!==today())&&supaConfigured()){
+      try{const r=await fetch(SUPA_URL+'/functions/v1/news',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}});
+        if(r.ok){const f=await r.json();if(f&&Array.isArray(f.points)&&f.points.length)n={updated:f.updated,points:f.points};}}catch(e){}
+    }
+    if(n){renderNews(n);try{localStorage.setItem(LS+'.news',JSON.stringify(n));}catch(e){}return;}
     if(!$('#brief').children.length)renderNews(null);return;}
   const slow=setTimeout(()=>{$('#newsDate').textContent='The briefing can’t be reached yet.';},10000);
   try{const s=await DB.doc('news/latest').get();clearTimeout(slow);

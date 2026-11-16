@@ -2042,7 +2042,7 @@ async function loadNews(){
     try{const r=await fetch('daily.json?t='+Date.now(),{cache:'no-store'});if(r.ok)n=await r.json();}catch(e){}
     if((!n||n.updated!==today())&&supaConfigured()){
       try{const r=await fetch(SUPA_URL+'/functions/v1/news',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}});
-        if(r.ok){const f=await r.json();if(f&&Array.isArray(f.points)&&f.points.length)n={updated:f.updated,points:f.points};}}catch(e){}
+        if(r.ok){const f=await r.json();if(f&&Array.isArray(f.points)&&f.points.length)n={updated:f.updated,points:f.points,daily:f.daily||null};}}catch(e){}
     }
     if(n){renderNews(n);try{localStorage.setItem(LS+'.news',JSON.stringify(n));}catch(e){}return;}
     if(!$('#brief').children.length)renderNews(null);return;}

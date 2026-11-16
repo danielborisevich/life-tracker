@@ -252,6 +252,15 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .ev.Study{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
 .ev.Social{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
 .ev.Other{background:var(--surface-2);color:var(--muted)}
+.ev.Ext{background:color-mix(in srgb,var(--accent-2) 16%,transparent);color:var(--accent-2)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.wkday{border:1px solid var(--line);border-radius:8px;padding:8px 6px;min-height:240px;display:flex;flex-direction:column;gap:4px;background:var(--surface);cursor:pointer;text-align:left;min-width:0}
+.wkday.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.wkday.sel{background:var(--accent-soft)}
+.wkday .wh{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;display:flex;justify-content:space-between}
+.wkday .ev{white-space:normal;font-size:11.5px;line-height:1.3;padding:3px 5px}
+.wkday .ev b{display:block;font-family:var(--font-mono);font-weight:500;font-size:10.5px;opacity:.85}
+@media (max-width:760px){.week{grid-template-columns:1fr}.wkday{min-height:0}}
 .marks{display:flex;gap:4px;margin-top:auto;flex-wrap:wrap}
 .mk{font-size:10px;font-family:var(--font-mono);border-radius:3px;padding:0 4px;background:var(--surface-2);color:var(--muted)}
 .mk.gym{background:color-mix(in srgb,var(--heat) 18%,transparent);color:var(--heat)}
@@ -495,9 +504,9 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
     <div class="view-head"><div><h1 id="h-cal">Calendar</h1><p>Events, task due dates, workouts and study time in one place.</p></div></div>
     <div class="grid2">
       <div class="card">
-        <div class="card-head"><h2 id="calTitle"></h2><div class="row"><button class="btn small" id="calPrev" type="button" aria-label="Previous month">‹</button><button class="btn small" id="calToday" type="button">Today</button><button class="btn small" id="calNext" type="button" aria-label="Next month">›</button></div></div>
+        <div class="card-head"><h2 id="calTitle"></h2><div class="row" style="align-items:center"><div class="seg" id="calView" role="group" aria-label="Calendar view"><button type="button" data-cv="month" aria-pressed="true">Month</button><button type="button" data-cv="week" aria-pressed="false">Week</button></div><button class="btn small" id="calPrev" type="button" aria-label="Previous month">‹</button><button class="btn small" id="calToday" type="button">Today</button><button class="btn small" id="calNext" type="button" aria-label="Next month">›</button></div></div>
         <div class="cal" id="calGrid"></div>
-        <div class="legend"><span><i style="background:var(--accent-soft)"></i>Event</span><span><i style="background:color-mix(in srgb,var(--accent-2) 30%,transparent)"></i>Run</span><span><i style="background:color-mix(in srgb,var(--accent-3) 30%,transparent)"></i>Tennis</span><span><i style="background:color-mix(in srgb,var(--heat) 30%,transparent)"></i>Workout</span><span><i style="background:color-mix(in srgb,var(--good) 30%,transparent)"></i>Study minutes</span><span><i style="background:var(--surface-2)"></i>Tasks due</span></div>
+        <div class="legend"><span><i style="background:var(--accent-soft)"></i>Event</span><span><i style="background:color-mix(in srgb,var(--accent-2) 30%,transparent)"></i>Apple / Canvas</span><span><i style="background:color-mix(in srgb,var(--accent-2) 30%,transparent)"></i>Run</span><span><i style="background:color-mix(in srgb,var(--accent-3) 30%,transparent)"></i>Tennis</span><span><i style="background:color-mix(in srgb,var(--heat) 30%,transparent)"></i>Workout</span><span><i style="background:color-mix(in srgb,var(--good) 30%,transparent)"></i>Study minutes</span><span><i style="background:var(--surface-2)"></i>Tasks due</span></div>
       </div>
       <div class="card">
         <h2 id="dayTitle"></h2>
@@ -513,6 +522,16 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
           <label class="check"><input type="checkbox" id="evWeekly"> Repeats every week</label>
           <button class="btn primary" type="submit">Add to this day</button>
         </form>
+        <div id="calLinks" style="border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px">
+          <h3>Apple Calendar &amp; Canvas</h3>
+          <p class="muted small">Paste a calendar's share link and its events show up here. They refresh every time you open the app.</p>
+          <ul class="list" id="calLinkList"></ul>
+          <form class="row" id="calLinkForm"><input type="text" id="calLinkUrl" class="grow" placeholder="webcal://p01-caldav.icloud.com/published/…" aria-label="Calendar link"><input type="text" id="calLinkName" placeholder="Name (optional)" style="width:150px" aria-label="Calendar name"><button class="btn primary" type="submit">Add</button></form>
+          <details><summary class="small" style="cursor:pointer;font-weight:700">How to get your Apple Calendar link</summary>
+            <ol class="small muted" style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px"><li>On your iPhone, open Calendar and tap <b>Calendars</b> at the bottom.</li><li>Tap ⓘ next to the calendar you want (for example your class schedule).</li><li>Turn on <b>Public Calendar</b>, tap <b>Share Link…</b>, then <b>Copy</b>.</li><li>Paste it above and tap Add.</li><li>Canvas: open Calendar on Canvas, click <b>Calendar Feed</b> at the bottom right, and copy that link.</li></ol>
+            <p class="small muted" style="margin-top:6px">Anyone who has a public link can see that calendar, so only share calendars you're comfortable with.</p></details>
+          <p class="small" id="calMsg" role="status"></p>
+        </div>
       </div>
     </div>
   </section>
@@ -762,7 +781,7 @@ async function flush(key,retried){
 async function connect(){
   if(inClaude)return connectClaude();
   if(supaConfigured())await startSupabase();else setSync('local');
-  loadNews();
+  loadNews();refreshCals();
 }
 function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`))return res();const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=()=>rej(new Error('Could not load a needed file. Check your connection and try again.'));document.head.appendChild(el);});}
 async function startSupabase(){
@@ -782,7 +801,7 @@ async function pullRemote(){
   if(error){setSync('error');return;}
   if(!data.length&&hadLocal){for(const k of KEYS)flush(k);}
   data.forEach(r=>{if(KEYS.includes(r.key)){try{S[r.key]=JSON.parse(r.json);}catch(e){}}});
-  saveLocal();renderAll();setSync('ok');
+  saveLocal();renderAll();setSync('ok');if(calsAt)refreshCals();
 }
 function updateAcct(){const b=$('#acctBtn');b.textContent=SBUID?'Sign out':'Sign in';}
 const aMsg=t=>{$('#aMsg').textContent=t;};
@@ -1205,10 +1224,19 @@ $('#clearDone').addEventListener('click',()=>{S.todos=S.todos.filter(x=>!x.done)
 
 /* ---------- CALENDAR ---------- */
 let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1);})();
-let selDay=today();
-function eventsOn(d){const wd=parseD(d).getDay();return S.events.filter(e=>e.date===d||(e.weekly&&e.date<=d&&parseD(e.date).getDay()===wd&&!(e.skip||[]).includes(d)));}
+let selDay=today(),calView='month';
+function renderWeek(){
+  const t=today();const w0=addDays(selDay,-parseD(selDay).getDay());const w6=addDays(w0,6);
+  $('#calTitle').textContent=`${fmtDate(w0,{month:'short',day:'numeric'})} – ${fmtDate(w6,{month:'short',day:'numeric',year:'numeric'})}`;
+  let h='';for(let i=0;i<7;i++){const d=addDays(w0,i);const evs=eventsOn(d).sort((a,b)=>(a.start||'00').localeCompare(b.start||'00'));const due=S.todos.filter(x=>!x.done&&x.due===d);
+    h+=`<button type="button" class="wkday ${d===t?'today':''} ${d===selDay?'sel':''}" data-day="${d}"><span class="wh"><span>${fmtDate(d,{weekday:'short'})}</span><span class="num">${parseD(d).getDate()}</span></span>${evs.map(e=>`<span class="ev ${e.ext?'Ext':esc(e.cat)}">${e.start?`<b>${fmtTime(e.start).replace(':00','').replace(' ','').toLowerCase()}</b>`:''}${esc(e.title)}</span>`).join('')}${due.map(x=>`<span class="mk">Due: ${esc(x.title)}</span>`).join('')}</button>`;}
+  $('#calGrid').className='week';$('#calGrid').innerHTML=h;
+}
+function eventsOn(d){const wd=parseD(d).getDay();return S.events.filter(e=>e.date===d||(e.weekly&&e.date<=d&&parseD(e.date).getDay()===wd&&!(e.skip||[]).includes(d))).concat(extByDate[d]||[]);}
 function renderCalendar(){
   const t=today();
+  document.querySelectorAll('#calView button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.cv===calView));
+  if(calView==='week'){renderWeek();renderDayPanel();return;}
   $('#calTitle').textContent=calMonth.toLocaleDateString(undefined,{month:'long',year:'numeric'});
   const first=new Date(calMonth);first.setDate(1-first.getDay());
   let h=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="wd">${d}</div>`).join('');
@@ -1217,13 +1245,15 @@ function renderCalendar(){
     const evs=eventsOn(s).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99'));
     const due=S.todos.filter(x=>!x.done&&x.due===s).length;
     const wk=S.workouts.filter(w=>w.date===s).length;const rn=(S.runs||[]).filter(r=>r.date===s);const tn=(S.tennis||[]).filter(r=>r.date===s).length;const mins=minutesOn(s);
-    h+=`<button type="button" class="day ${d.getMonth()!==calMonth.getMonth()?'out':''} ${s===t?'today':''} ${s===selDay?'sel':''}" data-day="${s}" aria-label="${fmtDate(s,{weekday:'long',month:'long',day:'numeric'})}"><span class="n">${d.getDate()}</span>${evs.slice(0,2).map(e=>`<span class="ev ${e.cat}">${esc(e.title)}</span>`).join('')}${evs.length>2?`<span class="n">+${evs.length-2} more</span>`:''}<span class="marks">${wk?`<span class="mk gym">lift</span>`:''}${rn.length?`<span class="mk run">${+fromKm(rn.reduce((a,r)=>a+r.km,0)).toFixed(1)}${DU()}</span>`:''}${tn?`<span class="mk ten">tennis</span>`:''}${mins?`<span class="mk st">${mins}m</span>`:''}${due?`<span class="mk">${due} due</span>`:''}</span></button>`;
+    h+=`<button type="button" class="day ${d.getMonth()!==calMonth.getMonth()?'out':''} ${s===t?'today':''} ${s===selDay?'sel':''}" data-day="${s}" aria-label="${fmtDate(s,{weekday:'long',month:'long',day:'numeric'})}"><span class="n">${d.getDate()}</span>${evs.slice(0,2).map(e=>`<span class="ev ${e.ext?'Ext':esc(e.cat)}">${esc(e.title)}</span>`).join('')}${evs.length>2?`<span class="n">+${evs.length-2} more</span>`:''}<span class="marks">${wk?`<span class="mk gym">lift</span>`:''}${rn.length?`<span class="mk run">${+fromKm(rn.reduce((a,r)=>a+r.km,0)).toFixed(1)}${DU()}</span>`:''}${tn?`<span class="mk ten">tennis</span>`:''}${mins?`<span class="mk st">${mins}m</span>`:''}${due?`<span class="mk">${due} due</span>`:''}</span></button>`;
   }
-  $('#calGrid').innerHTML=h;
-  // day panel
+  $('#calGrid').className='cal';$('#calGrid').innerHTML=h;
+  renderDayPanel();
+}
+function renderDayPanel(){
   $('#dayTitle').textContent=fmtDate(selDay,{weekday:'long',month:'long',day:'numeric'});
   const evs=eventsOn(selDay).sort((a,b)=>(a.start||'99').localeCompare(b.start||'99'));
-  let li=evs.map(e=>`<li><span class="pill acc num">${e.start?fmtTime(e.start)+(e.end?'–'+fmtTime(e.end):''):'All day'}</span><span style="flex:1">${esc(e.title)} ${e.weekly?'<span class="muted small">· weekly</span>':''}</span><span class="pill">${esc(e.cat)}</span><button class="icon-btn" data-edel="${e.id}" aria-label="Delete event">×</button></li>`).join('');
+  let li=evs.map(e=>`<li><span class="pill acc num">${e.start?fmtTime(e.start)+(e.end?'–'+fmtTime(e.end):''):'All day'}</span><span style="flex:1">${esc(e.title)} ${e.weekly?'<span class="muted small">· weekly</span>':''}</span><span class="pill" ${e.ext?'style="color:var(--accent-2)"':''}>${esc(e.cat)}</span>${e.ext?'':`<button class="icon-btn" data-edel="${e.id}" aria-label="Delete event">×</button>`}</li>`).join('');
   li+=S.todos.filter(x=>x.due===selDay).map(x=>`<li><span class="pill ${x.done?'good':'warn'}">${x.done?'Done':'Task due'}</span><span style="flex:1">${esc(x.title)}</span></li>`).join('');
   li+=S.workouts.filter(w=>w.date===selDay).map(w=>`<li><span class="pill" style="color:var(--heat)">Workout</span><span style="flex:1">${esc(w.name)} · ${w.entries.reduce((a,e)=>a+e.sets.length,0)} sets</span></li>`).join('');
   li+=(S.runs||[]).filter(r=>r.date===selDay).map(r=>`<li><span class="pill" style="color:var(--accent-2)">Run</span><span style="flex:1">${esc(r.type)} · ${(+fromKm(r.km).toFixed(2))} ${DU()} in ${fmtDur(r.sec)}</span></li>`).join('');
@@ -1232,8 +1262,9 @@ function renderCalendar(){
   $('#dayItems').innerHTML=li||`<li class="empty">Nothing on this day.</li>`;
 }
 $('#calGrid').addEventListener('click',e=>{const b=e.target.closest('[data-day]');if(!b)return;selDay=b.dataset.day;renderCalendar();});
-$('#calPrev').addEventListener('click',()=>{calMonth.setMonth(calMonth.getMonth()-1);renderCalendar();});
-$('#calNext').addEventListener('click',()=>{calMonth.setMonth(calMonth.getMonth()+1);renderCalendar();});
+$('#calPrev').addEventListener('click',()=>{if(calView==='week'){selDay=addDays(selDay,-7);const d=parseD(selDay);calMonth=new Date(d.getFullYear(),d.getMonth(),1);}else calMonth.setMonth(calMonth.getMonth()-1);renderCalendar();});
+$('#calView').addEventListener('click',e=>{const b=e.target.closest('[data-cv]');if(!b)return;calView=b.dataset.cv;renderCalendar();});
+$('#calNext').addEventListener('click',()=>{if(calView==='week'){selDay=addDays(selDay,7);const d=parseD(selDay);calMonth=new Date(d.getFullYear(),d.getMonth(),1);}else calMonth.setMonth(calMonth.getMonth()+1);renderCalendar();});
 $('#calToday').addEventListener('click',()=>{const d=new Date();calMonth=new Date(d.getFullYear(),d.getMonth(),1);selDay=today();renderCalendar();});
 $('#dayItems').addEventListener('click',e=>{const id=e.target.dataset.edel;if(!id)return;const ev=S.events.find(x=>x.id===id);
   if(ev&&ev.weekly&&ev.date!==selDay){ev.skip=[...(ev.skip||[]),selDay];toast('Removed this week only');}else S.events=S.events.filter(x=>x.id!==id);
@@ -1241,6 +1272,84 @@ $('#dayItems').addEventListener('click',e=>{const id=e.target.dataset.edel;if(!i
 $('#evForm').addEventListener('submit',e=>{e.preventDefault();const title=$('#evTitle').value.trim();if(!title)return;
   S.events.push({id:uid(),date:selDay,title,start:$('#evStart').value,end:$('#evEnd').value,cat:$('#evCat').value,weekly:$('#evWeekly').checked});
   $('#evTitle').value='';$('#evStart').value='';$('#evEnd').value='';$('#evWeekly').checked=false;save('events');renderCalendar();renderProductivity();toast('Event added');});
+
+
+/* ---------- linked calendars (Apple iCloud / Canvas .ics) ---------- */
+let EXT=[],extByDate={};
+try{EXT=JSON.parse(localStorage.getItem(LS+'.ext')||'[]');}catch(e){EXT=[];}
+function indexExt(){extByDate={};const ids=new Set((S.settings.cals||[]).map(c=>c.id));EXT.forEach(o=>{if(o.calId&&!ids.has(o.calId))return;(extByDate[o.date]=extByDate[o.date]||[]).push(o);});}
+indexExt();
+const icsUnesc=v=>String(v||'').replace(/\\n/gi,' ').replace(/\\([,;\\])/g,'$1').trim();
+function icsDate(v){const m=String(v||'').match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?/);if(!m)return null;
+  if(!m[4])return {allDay:true,dt:new Date(+m[1],m[2]-1,+m[3])};
+  return {allDay:false,dt:m[7]?new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0))):new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0))};}
+function isoDurMs(v){const m=String(v||'').match(/P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?/);if(!m)return 0;return ((+m[1]||0)*7*864e5)+((+m[2]||0)*864e5)+((+m[3]||0)*36e5)+((+m[4]||0)*6e4)+((+m[5]||0)*1e3);}
+function parseICS(text){
+  const lines=text.replace(/\r\n[ \t]/g,'').replace(/\n[ \t]/g,'').split(/\r?\n/);const evs=[];let cur=null,calName='';
+  for(const ln of lines){
+    if(ln==='BEGIN:VEVENT'){cur={ex:[]};continue;}
+    if(ln==='END:VEVENT'){if(cur&&cur.start)evs.push(cur);cur=null;continue;}
+    const i=ln.indexOf(':');if(i<0)continue;const N=ln.slice(0,i).split(';')[0].toUpperCase(),val=ln.slice(i+1);
+    if(!cur){if(N==='X-WR-CALNAME')calName=icsUnesc(val);continue;}
+    if(N==='SUMMARY')cur.title=icsUnesc(val);else if(N==='DTSTART')cur.start=icsDate(val);else if(N==='DTEND')cur.end=icsDate(val);
+    else if(N==='DURATION')cur.dur=isoDurMs(val);else if(N==='RRULE')cur.rrule=Object.fromEntries(val.split(';').map(x=>x.split('=')));
+    else if(N==='EXDATE')val.split(',').forEach(v=>{const d=icsDate(v);if(d)cur.ex.push(ds(d.dt));});
+    else if(N==='RECURRENCE-ID')cur.recId=icsDate(val);else if(N==='UID')cur.uid=val;else if(N==='STATUS')cur.status=val;
+  }
+  return {calName,evs};
+}
+function expandICS(evs,label,from,to){
+  const out=[],over={};evs.filter(e=>e.recId&&e.uid).forEach(e=>{(over[e.uid]=over[e.uid]||new Set()).add(ds(e.recId.dt));});
+  const hm=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}`;const endLimit=parseD(to);endLimit.setHours(23,59,59);
+  const push=(e,st)=>{const d=ds(st);if(d<from||d>to||e.ex.includes(d)||e.status==='CANCELLED')return;if(!e.recId&&e.uid&&over[e.uid]&&over[e.uid].has(d))return;
+    const dm=e.end?e.end.dt-e.start.dt:(e.dur||0);
+    if(e.start.allDay){const n=Math.max(1,Math.round((dm||864e5)/864e5));for(let k=0;k<n;k++){const dd=addDays(d,k);if(dd>=from&&dd<=to)out.push({date:dd,start:'',end:'',title:e.title||'(No title)',cat:label,ext:true});}return;}
+    out.push({date:d,start:hm(st),end:dm?hm(new Date(st.getTime()+dm)):'',title:e.title||'(No title)',cat:label,ext:true});};
+  const DAYS=['SU','MO','TU','WE','TH','FR','SA'];
+  for(const e of evs){
+    const s0=e.start.dt,r=e.rrule;if(!r){push(e,s0);continue;}
+    const iv=Math.max(1,+(r.INTERVAL||1)),count=r.COUNT?+r.COUNT:Infinity,until=r.UNTIL?(icsDate(r.UNTIL)||{}).dt:null;let n=0;
+    if(r.FREQ==='WEEKLY'){
+      const by=(r.BYDAY?r.BYDAY.split(','):[DAYS[s0.getDay()]]).map(x=>DAYS.indexOf(x.slice(-2))).filter(x=>x>=0).sort((a,b)=>a-b);
+      const w0=new Date(s0);w0.setDate(s0.getDate()-s0.getDay());let stop=false;
+      for(let w=0;w<3000&&!stop;w+=iv){for(const dow of by){const o=new Date(w0);o.setDate(w0.getDate()+w*7+dow);o.setHours(s0.getHours(),s0.getMinutes(),s0.getSeconds());
+        if(o<s0)continue;if((until&&o>until)||o>endLimit||n>=count){stop=true;break;}n++;push(e,o);}}
+    }else if(['DAILY','MONTHLY','YEARLY'].includes(r.FREQ)){
+      for(let k=0;k<6000;k++){const o=new Date(s0);if(r.FREQ==='DAILY')o.setDate(s0.getDate()+k*iv);else if(r.FREQ==='MONTHLY')o.setMonth(s0.getMonth()+k*iv);else o.setFullYear(s0.getFullYear()+k*iv);
+        if((until&&o>until)||o>endLimit||n>=count)break;n++;push(e,o);}
+    }else push(e,s0);
+  }
+  return out;
+}
+let calsLoading=false,calsAt=0;
+async function refreshCals(showToast){
+  const cals=S.settings.cals||[];renderCalLinks();
+  if(!cals.length){EXT=[];indexExt();renderCalendar();renderProductivity();return;}
+  if(!supaConfigured()){$('#calMsg').textContent='Linked calendars work on the website version: danielborisevich.github.io/life-tracker';return;}
+  if(calsLoading)return;calsLoading=true;$('#calMsg').textContent='Updating calendars…';
+  const from=addDays(today(),-90),to=addDays(today(),365),all=[],errs=[];
+  for(const c of cals){
+    try{const r=await fetch(SUPA_URL+'/functions/v1/ics',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({url:c.url})});
+      const t=await r.text();if(!r.ok)throw new Error(t||('error '+r.status));
+      const p=parseICS(t);if(!c.name&&p.calName){c.name=p.calName;save('settings');}
+      all.push(...expandICS(p.evs,c.name||'Calendar',from,to).map(o=>({...o,calId:c.id})));}
+    catch(e){errs.push(`${c.name||'A calendar'}: ${e.message||'could not load'}`);}
+  }
+  EXT=all;calsAt=Date.now();try{localStorage.setItem(LS+'.ext',JSON.stringify(EXT));}catch(e){}
+  calsLoading=false;indexExt();renderCalendar();renderProductivity();renderCalLinks();
+  $('#calMsg').textContent=errs.length?errs.join(' · '):`Updated ${new Date().toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})} · ${all.length} events`;
+  if(showToast)toast(errs.length?'One calendar could not be loaded':'Calendar added');
+}
+function renderCalLinks(){
+  const cals=S.settings.cals||[];
+  $('#calLinkList').innerHTML=cals.map(c=>`<li><span class="pill" style="color:var(--accent-2)">${esc(c.name||'Calendar')}</span><span class="muted small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.url.replace(/^(webcal|https?):\/\//,'').slice(0,40))}…</span><button class="icon-btn" type="button" data-cdel="${c.id}" aria-label="Remove ${esc(c.name||'calendar')}">×</button></li>`).join('')||'<li class="empty">No calendars linked yet.</li>';
+}
+$('#calLinkForm').addEventListener('submit',e=>{e.preventDefault();const url=$('#calLinkUrl').value.trim();
+  if(!/^(webcal|https?):\/\//i.test(url)){$('#calMsg').textContent='Paste the full link, starting with webcal:// or https://';return;}
+  S.settings.cals=S.settings.cals||[];S.settings.cals.push({id:uid(),url,name:$('#calLinkName').value.trim()});save('settings');
+  $('#calLinkUrl').value='';$('#calLinkName').value='';refreshCals(true);});
+$('#calLinkList').addEventListener('click',e=>{const id=e.target.dataset.cdel;if(!id)return;S.settings.cals=(S.settings.cals||[]).filter(c=>c.id!==id);save('settings');EXT=EXT.filter(o=>o.calId!==id);try{localStorage.setItem(LS+'.ext',JSON.stringify(EXT));}catch(_){}indexExt();renderCalLinks();renderCalendar();renderProductivity();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-calsAt>15*60e3)refreshCals();});
 
 /* ---------- GYM: data ---------- */
 const MUSCLES={chest:'Chest',shoulders:'Shoulders',traps:'Traps',biceps:'Biceps',triceps:'Triceps',forearms:'Forearms',abs:'Abs',obliques:'Obliques',lats:'Lats & upper back',lowerback:'Lower back',glutes:'Glutes',quads:'Quads',hamstrings:'Hamstrings',calves:'Calves'};

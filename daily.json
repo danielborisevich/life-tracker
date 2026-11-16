@@ -1,35 +1,51 @@
 {
- "updated": "2026-11-15",
+ "updated": "2026-11-16",
  "points": [
   {
-   "headline": "Trump, Xi and Putin plan a three-way meeting",
-   "summary": "The White House says President Trump will hold trilateral talks with China's Xi Jinping and Russia's Vladimir Putin in Shenzhen next week, alongside the APEC summit. Nuclear weapons are expected to be on the agenda.",
-   "source": "Anadolu Agency",
-   "url": "https://www.aa.com.tr/en/world/morning-briefing-nov-14-2026/4124855"
+   "headline": "Supertanker sinks in Strait of Hormuz after mine strike",
+   "summary": "Iran's Revolutionary Guard says a supertanker loaded with about two million barrels of oil sank after hitting a naval mine, following earlier reports of two tankers catching fire near the strait. The incidents add to strain on a key global oil route during the Iran war.",
+   "source": "Anadolu Agency / Arab News",
+   "url": "https://www.aa.com.tr/en/world/morning-briefing-nov-15-2026/4125489"
   },
   {
-   "headline": "FAA ground stop snarls US air travel",
-   "summary": "A telecommunications failure forced the FAA to halt departures nationwide on Friday. The stop has been lifted, but thousands of flights were canceled or delayed and disruption carried into Sunday, ahead of Thanksgiving travel.",
-   "source": "U.S. News / Reuters",
-   "url": "https://www.usnews.com/news/world"
+   "headline": "Vulcan rocket fails, destroying 40 Amazon satellites",
+   "summary": "A United Launch Alliance Vulcan rocket broke down shortly after liftoff from Florida on Sunday, losing its payload of 40 Amazon Leo internet satellites. It is the launch company's first mission failure and a further setback for Amazon's broadband constellation.",
+   "source": "Reuters",
+   "url": "https://www.dailykos.com/stories/2026/11/15/800129235/community/overnight-news-digest-november-15-2026/"
   },
   {
-   "headline": "Nvidia spy scandal shakes Washington",
-   "summary": "NBC reports Nvidia CEO Jensen Huang has resigned amid a scandal involving a suspected Chinese spy. It has also opened a public feud between the Treasury and Commerce secretaries over how chip exports to China were policed.",
-   "source": "NBC News",
-   "url": "https://nbcnews.com/meet-the-press/transcripts/meet-press-november-15-2026-rcna609426"
+   "headline": "Zelenskyy says Starshield limits weaken drone defense",
+   "summary": "Ukraine's president said restrictions on the SpaceX-run Starshield satellite system are hurting efforts to intercept Russian drones. He warned this could leave energy infrastructure more exposed as winter approaches.",
+   "source": "AP",
+   "url": "https://www.dailykos.com/stories/2026/11/15/800129235/community/overnight-news-digest-november-15-2026/"
   },
   {
-   "headline": "US loses measles elimination status",
-   "summary": "Researchers with knowledge of Pan American Health Organization deliberations say the United States no longer counts as a country where measles is eliminated, after sustained spread of the disease.",
-   "source": "NPR / KFF Health News",
-   "url": "https://www.npr.org/sections/news/"
+   "headline": "Australia and Philippines sign defense cooperation deal",
+   "summary": "The two countries signed an agreement in Manila that eases joint military exercises and expands maritime surveillance, intelligence sharing, training and disaster response cooperation.",
+   "source": "Reuters",
+   "url": "https://en.wikipedia.org/wiki/Portal:Current_events/2026_November_15"
   },
   {
-   "headline": "Türkiye and Qatar sign a mutual defense pact",
-   "summary": "President Erdogan and Qatar's emir signed five agreements in Istanbul, led by a mutual defense pact, plus deals on education, consumer protection and conflict resolution.",
-   "source": "Anadolu Agency",
-   "url": "https://www.aa.com.tr/en/world/morning-briefing-nov-14-2026/4124855"
+   "headline": "Israeli strike kills Hamas Rafah brigade commander",
+   "summary": "Hamas and the Israeli military both confirmed that the commander of Hamas's Rafah Brigade was killed in an overnight Israeli strike in southern Gaza, despite the ceasefire. Separately, Yemen's Houthis freed detainees in a Red Cross-supported release in Sanaa.",
+   "source": "The Times of Israel",
+   "url": "https://www.timesofisrael.com/liveblog-november-15-2026/"
   }
- ]
+ ],
+ "daily": {
+  "word": {
+   "word": "sanguine",
+   "pos": "adjective",
+   "def": "Cheerfully confident and optimistic, especially when facing a difficult situation."
+  },
+  "motivation": {
+   "text": "Fall seven times, stand up eight.",
+   "author": "Japanese proverb"
+  },
+  "fact": {
+   "text": "The cornea has no blood vessels, which keeps it transparent; instead it takes most of its oxygen straight from the air through the tear film, with a smaller supply from the aqueous humor behind it. That is why closing your eyes or wearing contact lenses lowers the oxygen reaching it.",
+   "source": "NCBI / PubMed Central",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8690994"
+  }
+ }
 }

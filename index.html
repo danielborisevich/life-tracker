@@ -320,21 +320,34 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
 
 
 /* finance */
-.catrow{display:grid;grid-template-columns:minmax(0,1fr) auto 96px;grid-template-areas:"name amt bud" "bar bar bar";column-gap:10px;row-gap:6px;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
+.catrow{display:grid;grid-template-columns:minmax(0,1fr) 88px;grid-template-areas:"top top" "bar bud";column-gap:10px;row-gap:6px;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
 .catrow:last-child{border-bottom:none}
-.catrow .cn{grid-area:name;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.catrow .ctop{grid-area:top;display:flex;justify-content:space-between;gap:10px;align-items:baseline;min-width:0}
+.catrow .cn{font-weight:600;min-width:0;overflow-wrap:anywhere}
 .catrow .track{grid-area:bar}
-.catrow .ca{grid-area:amt;text-align:right;white-space:nowrap}
-.catrow input{grid-area:bud}
+.catrow .ca{text-align:right;white-space:nowrap}
+.catrow input{grid-area:bud;justify-self:end;min-width:0;max-width:100%;box-sizing:border-box}
+#view-finance .card{overflow:hidden}
 .track{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
 .track i{display:block;height:100%;border-radius:999px;background:var(--accent)}
 .track i.good{background:var(--good)}.track i.warn{background:var(--warn)}.track i.bad{background:var(--bad)}
-.catrow input{width:96px;padding:5px 8px;font-size:13px}
+.catrow input{width:88px;padding:5px 8px;font-size:16px}
 .amt-exp{color:var(--bad)}.amt-inc{color:var(--good)}
 .goal{display:flex;flex-direction:column;gap:6px}
 .goal-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .goal .lift-in input{width:90px}
 #finRows select{padding:4px 6px;font-size:13px}
+@media (max-width:600px){
+  #view-finance table thead{display:none}
+  #finRows tr{display:grid;grid-template-columns:minmax(0,1fr) auto 28px;grid-template-areas:"desc amt del" "date cat cat";column-gap:8px;row-gap:2px;padding:8px 0;border-bottom:1px solid var(--line)}
+  #finRows td{border:none;padding:0}
+  #finRows td:nth-child(1){grid-area:date;font-size:12px;color:var(--muted);align-self:center}
+  #finRows td:nth-child(2){grid-area:desc;font-weight:600}
+  #finRows td:nth-child(3){grid-area:cat;justify-self:end}
+  #finRows td:nth-child(4){grid-area:amt}
+  #finRows td:nth-child(5){grid-area:del}
+  #finRows td[colspan]{grid-column:1/-1}
+}
 
 /* sleep */
 .swin{display:grid;grid-template-columns:70px 1fr 64px;gap:8px;align-items:center;font-size:13px;padding:4px 0}
@@ -1841,7 +1854,7 @@ function renderFinance(){
   const maxSpent=Math.max(1,...Object.values(byCat));
   $('#catBars').innerHTML=EXP_CATS.map(c=>{const sp=byCat[c]||0,bg=+S.budgets[c]||0;const den=bg||maxSpent;const pct=Math.min(100,sp/den*100);
     const cls=bg?(sp>=bg?'bad':sp>=bg*0.8?'warn':'good'):'';
-    return `<div class="catrow"><span class="cn">${c}</span><div class="track" title="${usd(sp)}${bg?` of ${usd(bg)}`:''}"><i class="${cls}" style="width:${pct}%"></i></div><span class="num small ca">${usd(sp)}${bg?`<span class="muted"> / ${usd(bg)}</span>`:''}</span><input type="number" min="0" step="5" placeholder="Budget" value="${bg||''}" data-bud="${c}" aria-label="${c} monthly budget"></div>`;}).join('');
+    return `<div class="catrow"><div class="ctop"><span class="cn">${c}</span><span class="num small ca">${usd(sp)}${bg?`<span class="muted"> / ${usd(bg)}</span>`:''}</span></div><div class="track" title="${usd(sp)}${bg?` of ${usd(bg)}`:''}"><i class="${cls}" style="width:${pct}%"></i></div><input type="number" min="0" step="5" placeholder="Budget" value="${bg||''}" data-bud="${c}" aria-label="${c} monthly budget"></div>`;}).join('');
   // chart: 6 months
   const months=[...Array(6)].map((_,i)=>shiftMonth(finMonth,i-5));
   const E=months.map(m=>monthTx(m).filter(t=>t.kind==='inc').reduce((a,t)=>a+t.amt,0)),P=months.map(m=>monthTx(m).filter(t=>t.kind==='exp').reduce((a,t)=>a+t.amt,0));

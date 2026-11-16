@@ -320,18 +320,18 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
 
 
 /* finance */
-.catrow{display:grid;grid-template-columns:minmax(0,1fr) 88px;grid-template-areas:"top top" "bar bud";column-gap:10px;row-gap:6px;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
+.catrow{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "bar";column-gap:10px;row-gap:6px;align-items:center;font-size:14px;padding:8px 0;border-bottom:1px solid var(--line)}
 .catrow:last-child{border-bottom:none}
 .catrow .ctop{grid-area:top;display:flex;justify-content:space-between;gap:10px;align-items:baseline;min-width:0}
 .catrow .cn{font-weight:600;min-width:0;overflow-wrap:anywhere}
 .catrow .track{grid-area:bar}
 .catrow .ca{text-align:right;white-space:nowrap}
-.catrow input{grid-area:bud;justify-self:end;min-width:0;max-width:100%;box-sizing:border-box}
+.catrow input{width:96px;min-width:0;box-sizing:border-box;padding:5px 8px;font-size:16px;text-align:right}
 #view-finance .card{overflow:hidden}
 .track{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
 .track i{display:block;height:100%;border-radius:999px;background:var(--accent)}
 .track i.good{background:var(--good)}.track i.warn{background:var(--warn)}.track i.bad{background:var(--bad)}
-.catrow input{width:88px;padding:5px 8px;font-size:16px}
+
 .amt-exp{color:var(--bad)}.amt-inc{color:var(--good)}
 .goal{display:flex;flex-direction:column;gap:6px}
 .goal-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
@@ -736,7 +736,7 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
           </div>
         </details>
       </div>
-      <div class="card"><div class="card-head"><h2>Spending by category</h2><span class="muted small">Type a monthly budget to track it</span></div><div id="catBars"></div></div>
+      <div class="card"><div class="card-head"><h2>Spending by category</h2><button class="btn small" type="button" id="budEdit">Set budgets</button></div><div id="catBars"></div></div>
     </div>
     <div class="grid2">
       <div class="card"><div class="card-head"><h2>Earned vs. spent</h2><span class="muted small">Last 6 months</span></div><div id="finChart"></div></div>
@@ -1821,7 +1821,7 @@ $('#sleepQuick').addEventListener('click',e=>{
 const EXP_CATS=['Food & dining','Groceries','Transport','Shopping','Entertainment','Subscriptions','School','Health & fitness','Bills & phone','Gifts','Travel','Other'];
 const INC_CATS=['Job / paycheck','Tutoring','Gift','Refund','Other income'];
 const usd=n=>(+n||0).toLocaleString('en-US',{style:'currency',currency:'USD'});
-let finKind='exp',finMonth=today().slice(0,7),finFilter='all',finAll=false,pendingImport=null;
+let budEditing=false,finKind='exp',finMonth=today().slice(0,7),finFilter='all',finAll=false,pendingImport=null;
 const monthLabel=m=>{const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleDateString(undefined,{month:'long',year:'numeric'});};
 const shiftMonth=(m,n)=>{const [y,mo]=m.split('-').map(Number);const d=new Date(y,mo-1+n,1);return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;};
 const monthTx=m=>S.money.filter(t=>t.date.slice(0,7)===m);
@@ -1851,10 +1851,11 @@ function renderFinance(){
   const budgetTotal=Object.values(S.budgets).reduce((a,b)=>a+(+b||0),0);const spentBudgeted=Object.keys(S.budgets).reduce((a,c)=>a+(byCat[c]||0),0);
   $('#finTiles').innerHTML=[[usd(earned),'earned this month'],[usd(spent),'spent this month'],[`<em style="font-style:normal;color:${net>=0?'var(--good)':'var(--bad)'}">${net<0?'−':''}${usd(Math.abs(net))}</em>`,net>=0?'saved (earned − spent)':'overspent (earned − spent)'],[budgetTotal?usd(Math.max(0,budgetTotal-spentBudgeted)):(top?esc(top[0]):'–'),budgetTotal?`left of ${usd(budgetTotal)} budget`:'top spending category']].map(([v,l])=>`<div class="tile"><b style="font-size:24px">${v}</b><span>${l}</span></div>`).join('');
   // category bars
+  $('#budEdit').textContent=budEditing?'Done':'Set budgets';$('#budEdit').className=budEditing?'btn small primary':'btn small';
   const maxSpent=Math.max(1,...Object.values(byCat));
   $('#catBars').innerHTML=EXP_CATS.map(c=>{const sp=byCat[c]||0,bg=+S.budgets[c]||0;const den=bg||maxSpent;const pct=Math.min(100,sp/den*100);
     const cls=bg?(sp>=bg?'bad':sp>=bg*0.8?'warn':'good'):'';
-    return `<div class="catrow"><div class="ctop"><span class="cn">${c}</span><span class="num small ca">${usd(sp)}${bg?`<span class="muted"> / ${usd(bg)}</span>`:''}</span></div><div class="track" title="${usd(sp)}${bg?` of ${usd(bg)}`:''}"><i class="${cls}" style="width:${pct}%"></i></div><input type="number" min="0" step="5" placeholder="Budget" value="${bg||''}" data-bud="${c}" aria-label="${c} monthly budget"></div>`;}).join('');
+    return `<div class="catrow"><div class="ctop"><span class="cn">${c}</span>${budEditing?`<span class="ca small muted" style="display:flex;align-items:center;gap:6px">$<input type="number" min="0" step="5" placeholder="Budget" value="${bg||''}" data-bud="${c}" aria-label="${c} monthly budget"></span>`:`<span class="num small ca">${usd(sp)}${bg?`<span class="muted"> / ${usd(bg)}</span>`:''}</span>`}</div><div class="track" title="${usd(sp)}${bg?` of ${usd(bg)}`:''}"><i class="${cls}" style="width:${pct}%"></i></div></div>`;}).join('');
   // chart: 6 months
   const months=[...Array(6)].map((_,i)=>shiftMonth(finMonth,i-5));
   const E=months.map(m=>monthTx(m).filter(t=>t.kind==='inc').reduce((a,t)=>a+t.amt,0)),P=months.map(m=>monthTx(m).filter(t=>t.kind==='exp').reduce((a,t)=>a+t.amt,0));
@@ -1879,7 +1880,8 @@ $('#finForm').addEventListener('submit',e=>{e.preventDefault();const amt=Math.ab
   $('#fAmt').value='';$('#fDesc').value='';finMonth=date.slice(0,7);save('money');renderFinance();toast(finKind==='exp'?'Expense added':'Income added');});
 $('#finPrev').addEventListener('click',()=>{finMonth=shiftMonth(finMonth,-1);renderFinance();});
 $('#finNext').addEventListener('click',()=>{finMonth=shiftMonth(finMonth,1);renderFinance();});
-$('#catBars').addEventListener('change',e=>{const c=e.target.dataset.bud;if(!c)return;const v=+e.target.value;if(v>0)S.budgets[c]=v;else delete S.budgets[c];save('budgets');renderFinance();});
+$('#budEdit').addEventListener('click',()=>{budEditing=!budEditing;renderFinance();});
+$('#catBars').addEventListener('change',e=>{const c=e.target.dataset.bud;if(!c)return;const v=+e.target.value;if(v>0)S.budgets[c]=v;else delete S.budgets[c];save('budgets');if(!budEditing)renderFinance();});
 $('#finFilter').addEventListener('click',e=>{if(e.target.closest('[data-fall]')){finAll=!finAll;renderFinance();return;}const b=e.target.closest('[data-ff]');if(!b)return;finFilter=b.dataset.ff;renderFinance();});
 $('#finSearch').addEventListener('input',renderFinance);
 $('#finRows').addEventListener('change',e=>{const id=e.target.dataset.tcat;if(!id)return;const t=S.money.find(x=>x.id===id);t.cat=e.target.value;save('money');renderFinance();});

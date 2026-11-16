@@ -770,6 +770,8 @@ async function startSupabase(){
     if(!window.supabase)await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js');
     SB=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
     $('#acctBtn').hidden=false;
+    if(/error_description|error_code/.test(location.hash)){const u=new URLSearchParams(location.hash.slice(1));history.replaceState(null,'',location.pathname);
+      setTimeout(()=>{$('#authGate').hidden=false;aMsg(/expired|invalid/i.test(u.get('error_description')||'')?'That email link was already used, which means your account is confirmed. Sign in below with your email and password.':(u.get('error_description')||'').replace(/\+/g,' '));},0);}
     const {data:{session}}=await SB.auth.getSession();
     if(session){SBUID=session.user.id;updateAcct();await pullRemote();}
     else{updateAcct();setSync('local');let lo=null;try{lo=localStorage.getItem(LS+'.localonly');}catch(e){}if(lo!=='1')$('#authGate').hidden=false;}
@@ -789,7 +791,8 @@ async function doAuth(mode){
   if(!email||password.length<6){aMsg('Enter your email and a password of at least 6 characters.');return;}
   aMsg('One moment…');
   const r=mode==='up'?await SB.auth.signUp({email,password}):await SB.auth.signInWithPassword({email,password});
-  if(r.error){aMsg(r.error.message);return;}
+  if(r.error){const m=r.error.message||'';
+    aMsg(/already registered|already exists/i.test(m)?'You already have an account with this email. Tap Sign in instead.':/not confirmed/i.test(m)?'Your email isn\u2019t confirmed yet. Tap the link in the email from Supabase, then sign in.':/invalid login/i.test(m)?'That email and password don\u2019t match. Check them and try again.':m);return;}
   if(!r.data.session){aMsg('Check your email and tap the confirmation link, then come back and sign in.');return;}
   SBUID=r.data.session.user.id;$('#authGate').hidden=true;try{localStorage.removeItem(LS+'.localonly');}catch(e){}
   hadLocal=true;updateAcct();await pullRemote();toast('Signed in. Your data now syncs.');

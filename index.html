@@ -98,6 +98,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .skin-switch button[aria-pressed="true"]{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .rail a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);text-decoration:none;color:var(--muted);font-weight:500}
 .rail a svg{width:18px;height:18px;flex:none}
+.rail a .sm{display:none}
 .rail a:hover{background:var(--surface-2);color:var(--ink)}
 .rail a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
 .sync{margin-top:auto;font-size:12px;color:var(--muted);padding:10px;display:flex;gap:8px;align-items:center}
@@ -329,6 +330,15 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .goal-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .goal .lift-in input{width:90px}
 #finRows select{padding:4px 6px;font-size:13px}
+
+/* sleep */
+.swin{display:grid;grid-template-columns:70px 1fr 64px;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.swin .bar{position:relative;height:16px;background:var(--surface-2);border-radius:999px}
+.swin .bar i{position:absolute;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+.swin-axis{display:grid;grid-template-columns:70px 1fr 64px;gap:8px;font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.swin-axis div{display:flex;justify-content:space-between}
+.insight{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.insight:last-child{border-bottom:none}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:all .2s;z-index:50}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -337,7 +347,8 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
   .app{grid-template-columns:1fr}
   .rail{position:fixed;bottom:0;top:auto;left:0;right:0;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));border-right:none;border-top:1px solid var(--line);z-index:20;gap:0}
   .brand,.sync,.rail .skin-switch{display:none}
-  .rail a{flex-direction:column;gap:2px;font-size:10px;padding:6px 4px;flex:1;text-align:center}
+  .rail a{flex-direction:column;gap:2px;font-size:10px;padding:6px 2px;flex:1;text-align:center;min-width:0}
+  .rail a .lg{display:none}.rail a .sm{display:inline}
   main{padding:max(20px,env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
   h1{font-size:24px}
   .day{min-height:64px;padding:4px}
@@ -352,13 +363,14 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
   <nav class="rail" aria-label="Sections">
     <div class="brand">Life Tracker</div>
     <div class="skin-switch" role="group" aria-label="App style"><button type="button" data-skin="iron">Iron</button><button type="button" data-skin="blossom">Blossom</button></div>
-    <a href="#productivity" data-tab="productivity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Productivity</span></a>
-    <a href="#study" data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg><span>Study</span></a>
-    <a href="#todo" data-tab="todo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/></svg><span>To-Do</span></a>
-    <a href="#calendar" data-tab="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Calendar</span></a>
-    <a href="#gym" data-tab="gym"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg><span>Gym</span></a>
-    <a href="#finance" data-tab="finance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Finance</span></a>
-    <a href="#news" data-tab="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span>News</span></a>
+    <a href="#productivity" data-tab="productivity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span class="lg">Productivity</span><span class="sm">Today</span></a>
+    <a href="#study" data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg><span class="lg">Study</span><span class="sm">Study</span></a>
+    <a href="#todo" data-tab="todo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/></svg><span class="lg">To-Do</span><span class="sm">To-Do</span></a>
+    <a href="#calendar" data-tab="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="lg">Calendar</span><span class="sm">Cal</span></a>
+    <a href="#gym" data-tab="gym"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg><span class="lg">Gym</span><span class="sm">Gym</span></a>
+    <a href="#sleep" data-tab="sleep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg><span class="lg">Sleep</span><span class="sm">Sleep</span></a>
+    <a href="#finance" data-tab="finance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="lg">Finance</span><span class="sm">Money</span></a>
+    <a href="#news" data-tab="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span class="lg">News</span><span class="sm">News</span></a>
     <div class="sync" id="sync"><i></i><span>Connecting…</span></div>
   </nav>
 
@@ -642,6 +654,43 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
     </div>
   </section>
 
+  <!-- SLEEP -->
+  <section class="view" id="view-sleep" aria-labelledby="h-sleep">
+    <div class="view-head"><div><h1 id="h-sleep">Sleep</h1><p>How long, how well, and what changes it.</p></div>
+      <div class="row" id="sleepQuick"></div></div>
+    <div class="tiles" id="sleepTiles"></div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><h2>Last 14 nights</h2><span class="muted small" id="sleepGoalLbl"></span></div><div id="sleepChart"></div></div>
+      <div class="card">
+        <h2>Log a night</h2>
+        <form id="sleepForm" style="display:flex;flex-direction:column;gap:10px">
+          <div class="row">
+            <label class="field">Night of<input type="date" id="slDate"></label>
+            <label class="field">Went to bed<input type="time" id="slBed" value="23:30" required></label>
+            <label class="field">Woke up<input type="time" id="slWake" value="07:30" required></label>
+          </div>
+          <div class="row">
+            <label class="field">How rested? <select id="slQ"><option value="5">5 · Great</option><option value="4" selected>4 · Good</option><option value="3">3 · Okay</option><option value="2">2 · Tired</option><option value="1">1 · Exhausted</option></select></label>
+            <label class="field">Times woke up<input type="number" id="slWakes" min="0" max="20" value="0" style="width:90px"></label>
+          </div>
+          <div class="field" style="font-size:13px;color:var(--muted);font-weight:500">Anything that day?<div class="chips" id="slFactors" style="margin-top:4px"></div></div>
+          <label class="field">Notes<input type="text" id="slNotes" placeholder="Pulled a late night for the Chem exam"></label>
+          <div class="row" style="justify-content:space-between;align-items:center"><span class="muted small" id="slPreview"></span><button class="btn primary" type="submit">Save night</button></div>
+        </form>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-head"><h2>Sleep window</h2><span class="muted small">When you slept, last 7 nights</span></div><div id="sleepWindow"></div></div>
+      <div class="card"><h2>What affects your sleep</h2><div id="sleepInsights"></div>
+        <div class="row" style="border-top:1px solid var(--line);padding-top:12px;align-items:flex-end">
+          <label class="field">Nightly goal (hours)<input type="number" id="slGoal" min="4" max="12" step="0.25" style="width:100px"></label>
+          <label class="field">Target bedtime<input type="time" id="slGoalBed"></label>
+        </div>
+      </div>
+    </div>
+    <div class="card"><h2>Sleep log</h2><ul class="list" id="sleepList"></ul></div>
+  </section>
+
   <!-- FINANCE -->
   <section class="view" id="view-finance" aria-labelledby="h-fin">
     <div class="view-head"><div><h1 id="h-fin">Finance</h1><p>Money in, money out, and where it goes.</p></div>
@@ -722,7 +771,7 @@ const clockFromDate=d=>d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600);}
 
 /* ---------- state + persistence ---------- */
-const KEYS=['money','budgets','goals','todos','events','workouts','runs','tennis','sessions','cards','habits','profile','lifts','prio','active','settings'];
+const KEYS=['sleep','money','budgets','goals','todos','events','workouts','runs','tennis','sessions','cards','habits','profile','lifts','prio','active','settings'];
 function defaults(){
   const t=today();
   return {
@@ -730,7 +779,7 @@ function defaults(){
       {id:uid(),title:'Try one Pomodoro round in the Study tab',due:t,pri:'M',list:'School',done:false,created:Date.now()},
       {id:uid(),title:'Add your age and bodyweight in Gym → Rank',due:t,pri:'L',list:'Gym',done:false,created:Date.now()-1}
     ],
-    money:[],budgets:{},goals:[],
+    sleep:[],money:[],budgets:{},goals:[],
     events:[],workouts:[],runs:[],tennis:[],sessions:[],
     cards:[{id:uid(),deck:'Biochem',front:'What three parts make up a nucleotide?',back:'A nitrogenous base, a five-carbon sugar (ribose or deoxyribose), and one or more phosphate groups.',box:1,due:t}],
     habits:[{id:uid(),name:'Study 2 hours',log:{}},{id:uid(),name:'Work out',log:{}},{id:uid(),name:'In bed by midnight',log:{}}],
@@ -841,7 +890,7 @@ async function connectClaude(){
 }
 
 /* ---------- routing ---------- */
-const TABS=['productivity','study','todo','calendar','gym','finance','news'];
+const TABS=['productivity','study','todo','calendar','gym','sleep','finance','news'];
 function route(){
   let h=location.hash.slice(1);if(!TABS.includes(h))h='productivity';
   TABS.forEach(t=>{$('#view-'+t).classList.toggle('active',t===h);});
@@ -1258,6 +1307,7 @@ function renderDayPanel(){
   li+=S.workouts.filter(w=>w.date===selDay).map(w=>`<li><span class="pill" style="color:var(--heat)">Workout</span><span style="flex:1">${esc(w.name)} · ${w.entries.reduce((a,e)=>a+e.sets.length,0)} sets</span></li>`).join('');
   li+=(S.runs||[]).filter(r=>r.date===selDay).map(r=>`<li><span class="pill" style="color:var(--accent-2)">Run</span><span style="flex:1">${esc(r.type)} · ${(+fromKm(r.km).toFixed(2))} ${DU()} in ${fmtDur(r.sec)}</span></li>`).join('');
   li+=(S.tennis||[]).filter(r=>r.date===selDay).map(r=>`<li><span class="pill" style="color:var(--accent-3)">Tennis</span><span style="flex:1">${esc(r.type)} · ${r.mins} min${r.result?` · ${esc(r.result)}`:''}</span></li>`).join('');
+  const sl=(S.sleep||[]).find(x=>x.date===selDay);if(sl)li+=`<li><span class="pill" style="color:var(--accent-2)">Sleep</span><span>${hmStr(sl.mins)} · ${fmtTime(sl.bed)} → ${fmtTime(sl.wake)}</span></li>`;
   const m=minutesOn(selDay);if(m)li+=`<li><span class="pill good">Study</span><span>${m} minutes focused</span></li>`;
   $('#dayItems').innerHTML=li||`<li class="empty">Nothing on this day.</li>`;
 }
@@ -1663,6 +1713,92 @@ $('#gymSeg').addEventListener('click',e=>{const b=e.target.closest('[data-pane]'
 function renderAllGym(){renderBody();renderLog();renderPrograms();renderRank();renderRunning();renderTennis();renderHistory();showPane(pane);}
 
 
+
+/* ---------- SLEEP ---------- */
+const SFACTORS=['Caffeine after 2pm','Alcohol','Screens in bed','Worked out','Stressed','Napped','Late meal','Exam / deadline'];
+let slFactors=new Set();
+const toMin=t=>{const [h,m]=String(t||'0:0').split(':').map(Number);return h*60+m;};
+const sleepMins=(bed,wake)=>{let d=toMin(wake)-toMin(bed);if(d<=0)d+=1440;return d;};
+const hmStr=m=>{m=Math.round(m);return m<60?`${m}m`:`${Math.floor(m/60)}h ${pad(m%60)}m`;};
+function sleepGoal(){const g=S.settings.sleepGoal||{};return {hours:+g.hours||8,bed:g.bed||'23:30'};}
+function defaultNight(){const n=new Date();return n.getHours()<14?addDays(today(),-1):today();}
+function renderSleep(){
+  const L=(S.sleep||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));const g=sleepGoal(),goalM=g.hours*60;
+  // quick buttons
+  const pend=S.settings.sleepPending;
+  $('#sleepQuick').innerHTML=pend?`<span class="muted small">In bed since ${new Date(pend).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</span><button class="btn primary" type="button" id="slAwake">I'm awake</button><button class="btn ghost small" type="button" id="slCancel">Cancel</button>`:`<button class="btn primary" type="button" id="slBedNow">Going to bed now</button>`;
+  // tiles
+  const last=L[0];const wk=L.filter(x=>x.date>=addDays(today(),-7));
+  const avg=wk.length?wk.reduce((a,x)=>a+x.mins,0)/wk.length:0;
+  const debt=wk.reduce((a,x)=>a+(goalM-x.mins),0);
+  const beds=wk.map(x=>{let m=toMin(x.bed);if(m<12*60)m+=1440;return m;});
+  const mean=beds.length?beds.reduce((a,b)=>a+b,0)/beds.length:0;const sd=beds.length>1?Math.sqrt(beds.reduce((a,b)=>a+(b-mean)**2,0)/beds.length):0;
+  $('#sleepTiles').innerHTML=[
+    [last?hmStr(last.mins):'–',last?`last night (${fmtDate(last.date,{weekday:'short'})})`:'last night'],
+    [avg?hmStr(avg):'–','average, last 7 nights'],
+    [wk.length?(debt>0?hmStr(debt):'None'):'–',wk.length?(debt>0?'sleep debt this week':`ahead of your ${g.hours}h goal`):'sleep debt this week'],
+    [beds.length>1?`±${Math.round(sd)} min`:'–','bedtime consistency']
+  ].map(([v,l])=>`<div class="tile"><b style="font-size:24px">${v}</b><span>${l}</span></div>`).join('');
+  $('#sleepGoalLbl').textContent=`Goal: ${g.hours}h a night`;
+  // 14-night chart
+  const days=[...Array(14)].map((_,i)=>addDays(today(),i-14));
+  const byD={};L.forEach(x=>{byD[x.date]=x;});
+  const W=560,H=200,Lp=34,B=24,T=14,bw=(W-Lp-10)/14,maxH=Math.max(10,g.hours+1,...days.map(d=>byD[d]?byD[d].mins/60:0));const top=Math.ceil(maxH/2)*2;
+  let sv='';for(let h=0;h<=top;h+=2){const y=T+(H-T-B)*(1-h/top);sv+=`<line x1="${Lp}" x2="${W-4}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${Lp-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--font-mono)">${h}h</text>`;}
+  const gy=T+(H-T-B)*(1-g.hours/top);
+  days.forEach((d,i)=>{const x=byD[d];const v=x?x.mins/60:0;const h=(H-T-B)*v/top;const bx=Lp+i*bw+bw*0.18;const met=x&&x.mins>=goalM-15;
+    if(x)sv+=`<rect x="${bx}" y="${H-B-h}" width="${bw*0.64}" height="${h}" rx="3" fill="${met?'var(--accent-2)':'color-mix(in srgb,var(--accent-2) 40%,var(--surface-2))'}"><title>${fmtDate(d)}: ${hmStr(x.mins)}, rested ${x.q}/5</title></rect>`;
+    if(i%2===1||i===13)sv+=`<text x="${bx+bw*0.32}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)">${parseD(d).getMonth()+1}/${parseD(d).getDate()}</text>`;});
+  sv+=`<line x1="${Lp}" x2="${W-4}" y1="${gy}" y2="${gy}" stroke="var(--accent)" stroke-dasharray="5 4" stroke-width="1.5"/><text x="${W-6}" y="${gy-5}" text-anchor="end" font-size="11" fill="var(--accent)">goal ${g.hours}h</text>`;
+  $('#sleepChart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Hours slept, last 14 nights">${sv}</svg>`;
+  // sleep window: axis 8pm (1200) to noon (2160)
+  const A0=20*60,A1=36*60;const pos=m=>Math.max(0,Math.min(100,(m-A0)/(A1-A0)*100));
+  const last7=[...Array(7)].map((_,i)=>addDays(today(),i-7)).reverse();
+  $('#sleepWindow').innerHTML=`<div class="swin-axis"><span></span><div><span>8p</span><span>12a</span><span>4a</span><span>8a</span><span>12p</span></div><span></span></div>`+last7.map(d=>{const x=byD[d];
+    if(!x)return `<div class="swin"><span class="muted">${fmtDate(d,{weekday:'short',day:'numeric'})}</span><div class="bar"></div><span class="muted small">–</span></div>`;
+    let b=toMin(x.bed);if(b<12*60)b+=1440;const e=b+x.mins;
+    return `<div class="swin"><span>${fmtDate(d,{weekday:'short',day:'numeric'})}</span><div class="bar" title="${fmtTime(x.bed)} – ${fmtTime(x.wake)}"><i style="left:${pos(b)}%;width:${Math.max(1,pos(e)-pos(b))}%"></i></div><span class="num small">${hmStr(x.mins)}</span></div>`;}).join('')+
+    `<p class="muted small" style="margin-top:6px">Target bedtime ${fmtTime(g.bed)}. Going to bed and waking at similar times every day is one of the strongest habits for good sleep.</p>`;
+  // insights
+  const ins=[];
+  SFACTORS.forEach(f=>{const w=L.filter(x=>(x.factors||[]).includes(f)),wo=L.filter(x=>!(x.factors||[]).includes(f));
+    if(w.length>=2&&wo.length>=2){const a=w.reduce((s_,x)=>s_+x.mins,0)/w.length,b=wo.reduce((s_,x)=>s_+x.mins,0)/wo.length,qa=w.reduce((s_,x)=>s_+x.q,0)/w.length,qb=wo.reduce((s_,x)=>s_+x.q,0)/wo.length;ins.push({f,diff:a-b,a,b,qa,qb});}});
+  ins.sort((x,y)=>Math.abs(y.diff)-Math.abs(x.diff));
+  const wd=L.filter(x=>[0,1,2,3,4].includes(parseD(x.date).getDay())),we=L.filter(x=>[5,6].includes(parseD(x.date).getDay()));
+  let html=ins.slice(0,5).map(i=>`<div class="insight"><span>${esc(i.f)}</span><span class="num ${i.diff<-10?'amt-exp':i.diff>10?'amt-inc':'muted'}">${i.diff>=0?'+':'−'}${hmStr(Math.abs(i.diff))} <span class="muted small">· rested ${i.qa.toFixed(1)} vs ${i.qb.toFixed(1)}</span></span></div>`).join('');
+  if(wd.length>=2&&we.length>=2){const a=wd.reduce((s_,x)=>s_+x.mins,0)/wd.length,b=we.reduce((s_,x)=>s_+x.mins,0)/we.length;html+=`<div class="insight"><span>School nights vs. weekends</span><span class="num">${hmStr(a)} <span class="muted">vs</span> ${hmStr(b)}</span></div>`;}
+  $('#sleepInsights').innerHTML=html||'<p class="muted small">Tag what happened on each day (caffeine, workouts, stress…). After a few nights with and without each one, you’ll see how much it changes your sleep here.</p>';
+  if(ins.length)$('#sleepInsights').insertAdjacentHTML('afterbegin','<p class="muted small" style="margin-bottom:4px">Difference in sleep on nights with each factor vs. without it.</p>');
+  $('#slGoal').value=g.hours;$('#slGoalBed').value=g.bed;
+  // factor chips + preview
+  $('#slFactors').innerHTML=SFACTORS.map(f=>`<button type="button" class="chip" data-sf="${esc(f)}" aria-pressed="${slFactors.has(f)}">${esc(f)}</button>`).join('');
+  slPreview();
+  // list
+  $('#sleepList').innerHTML=L.slice(0,40).map(x=>`<li style="align-items:flex-start"><span class="pill num">${fmtDate(x.date,{weekday:'short',month:'short',day:'numeric'})}</span><div style="flex:1;min-width:0"><b class="num">${hmStr(x.mins)}</b> <span class="muted small">${fmtTime(x.bed)} → ${fmtTime(x.wake)}</span> <select data-slq="${x.id}" aria-label="How rested" style="padding:2px 6px;font-size:12px">${[5,4,3,2,1].map(v=>`<option value="${v}" ${v===x.q?'selected':''}>rested ${v}/5</option>`).join('')}</select>${x.wakes?` <span class="pill">woke ${x.wakes}×</span>`:''}<div class="muted small">${(x.factors||[]).join(' · ')}${x.notes?`${(x.factors||[]).length?' · ':''}${esc(x.notes)}`:''}</div></div><button class="icon-btn" type="button" data-sldel="${x.id}" aria-label="Delete night">×</button></li>`).join('')||'<li class="empty">No nights logged yet. Tap "Going to bed now" tonight, or log last night above.</li>';
+}
+function slPreview(){const m=sleepMins($('#slBed').value,$('#slWake').value);$('#slPreview').textContent=`${hmStr(m)} of sleep`;}
+function addNight(o){S.sleep=(S.sleep||[]).filter(x=>x.date!==o.date);S.sleep.push(o);save('sleep');renderSleep();renderCalendar();}
+$('#slBed').addEventListener('input',slPreview);$('#slWake').addEventListener('input',slPreview);
+$('#slFactors').addEventListener('click',e=>{const b=e.target.closest('[data-sf]');if(!b)return;const f=b.dataset.sf;slFactors.has(f)?slFactors.delete(f):slFactors.add(f);b.setAttribute('aria-pressed',slFactors.has(f));});
+$('#sleepForm').addEventListener('submit',e=>{e.preventDefault();const bed=$('#slBed').value,wake=$('#slWake').value;if(!bed||!wake)return;
+  addNight({id:uid(),date:$('#slDate').value||defaultNight(),bed,wake,mins:sleepMins(bed,wake),q:+$('#slQ').value,wakes:+$('#slWakes').value||0,factors:[...slFactors],notes:$('#slNotes').value.trim()});
+  slFactors=new Set();$('#slNotes').value='';$('#slWakes').value=0;renderSleep();toast('Night saved');});
+$('#sleepList').addEventListener('change',e=>{const id=e.target.dataset.slq;if(!id)return;const x=S.sleep.find(n=>n.id===id);x.q=+e.target.value;save('sleep');renderSleep();});
+$('#sleepList').addEventListener('click',e=>{const id=e.target.dataset.sldel;if(!id)return;S.sleep=S.sleep.filter(x=>x.id!==id);save('sleep');renderSleep();renderCalendar();});
+['slGoal','slGoalBed'].forEach(id=>$('#'+id).addEventListener('change',()=>{S.settings.sleepGoal={hours:+$('#slGoal').value||8,bed:$('#slGoalBed').value||'23:30'};save('settings');renderSleep();}));
+$('#sleepQuick').addEventListener('click',e=>{
+  if(e.target.id==='slBedNow'){S.settings.sleepPending=Date.now();save('settings');renderSleep();toast('Good night. Tap "I’m awake" in the morning.');}
+  if(e.target.id==='slCancel'){delete S.settings.sleepPending;save('settings');renderSleep();}
+  if(e.target.id==='slAwake'){const st=new Date(S.settings.sleepPending),en=new Date();const mins=Math.round((en-st)/6e4);
+    if(mins<60){toast('That was under an hour, so it wasn’t saved as a night.');delete S.settings.sleepPending;save('settings');renderSleep();return;}
+    const night=st.getHours()<12?ds(new Date(st.getTime()-864e5)):ds(st);
+    const hm=d=>`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    delete S.settings.sleepPending;save('settings');
+    addNight({id:uid(),date:night,bed:hm(st),wake:hm(en),mins,q:4,wakes:0,factors:[],notes:''});
+    $('#slDate').value=night;$('#slBed').value=hm(st);$('#slWake').value=hm(en);
+    toast(`Good morning! You slept ${hmStr(mins)}. Rate how rested you feel in the list below.`);}
+});
+
 /* ---------- FINANCE ---------- */
 const EXP_CATS=['Food & dining','Groceries','Transport','Shopping','Entertainment','Subscriptions','School','Health & fitness','Bills & phone','Gifts','Travel','Other'];
 const INC_CATS=['Job / paycheck','Tutoring','Gift','Refund','Other income'];
@@ -1717,7 +1853,7 @@ function renderFinance(){
   const rows=(finAll?S.money:tx).filter(t=>(finFilter==='all'||t.kind===finFilter)&&(!q||(t.desc+' '+t.cat).toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
   $('#finRows').innerHTML=rows.map(t=>`<tr><td class="num">${fmtDate(t.date,{month:'short',day:'numeric',...(finAll?{year:'2-digit'}:{})})}</td><td style="overflow-wrap:anywhere">${esc(t.desc||'–')}</td><td><select data-tcat="${t.id}" aria-label="Category">${(t.kind==='exp'?EXP_CATS:INC_CATS).map(c=>`<option ${c===t.cat?'selected':''}>${c}</option>`).join('')}</select></td><td class="num ${t.kind==='exp'?'amt-exp':'amt-inc'}" style="text-align:right;white-space:nowrap">${t.kind==='exp'?'−':'+'}${usd(t.amt)}</td><td style="text-align:right"><button class="icon-btn" data-tdel2="${t.id}" aria-label="Delete transaction">×</button></td></tr>`).join('')||`<tr><td colspan="5" class="empty">${finAll?'No transactions yet.':`No transactions in ${monthLabel(finMonth)}. Use the arrows at the top or tap All months.`}</td></tr>`;
 }
-$('#finKind').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;finKind=b.dataset.k;fillCatSelect();renderFinance();});
+$('#finKind').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;finKind=b.dataset.k;fillCatSelect();renderFinance();renderSleep();});
 $('#fDesc').addEventListener('change',()=>{if(finKind==='exp'&&$('#fDesc').value.trim()){const c=guessCat($('#fDesc').value);if(c!=='Other')$('#fCat').value=c;}});
 $('#finForm').addEventListener('submit',e=>{e.preventDefault();const amt=Math.abs(+$('#fAmt').value);if(!amt)return;
   const date=$('#fDate').value||today();
@@ -1910,7 +2046,7 @@ $('#loadData').addEventListener('click',()=>{
 /* ---------- boot ---------- */
 function renderAll(){applySkin();renderProductivity();renderMethodChips();if(!T.running)resetTimer();renderCalc();renderCards();renderSessions();renderTodos();renderCalendar();renderAllGym();fillCatSelect();renderFinance();}
 (function init(){
-  const n=new Date();$('#pcStart').value=`${pad(n.getHours())}:${pad(n.getMinutes())}`;$('#mDate').value=today();$('#rDate').value=today();$('#tnDate').value=today();$('#fDate').value=today();
+  const n=new Date();$('#pcStart').value=`${pad(n.getHours())}:${pad(n.getMinutes())}`;$('#mDate').value=today();$('#rDate').value=today();$('#tnDate').value=today();$('#fDate').value=today();$('#slDate').value=defaultNight();
   renderAll();route();setSync('local');connect();
   if(!inClaude&&'serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 })();

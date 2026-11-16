@@ -744,6 +744,10 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
         <form class="row" id="goalForm"><input type="text" id="gName" class="grow" placeholder="Goal, e.g. Spring break trip" aria-label="Goal name"><input type="number" id="gTarget" min="1" placeholder="$ target" style="width:110px" aria-label="Target amount"><button class="btn" type="submit">Add goal</button></form>
       </div>
     </div>
+    <div class="card" id="kalshiCard">
+      <div class="card-head"><h2>Kalshi</h2><button class="btn small" type="button" id="kRefresh">Refresh</button></div>
+      <div id="kalshiBody"><p class="muted small">Loading…</p></div>
+    </div>
     <div class="card">
       <div class="card-head"><h2>Transactions</h2><div class="row" style="align-items:center"><div class="chips" id="finFilter"></div><input type="text" id="finSearch" placeholder="Search" aria-label="Search transactions" style="width:160px"></div></div>
       <div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th><th></th></tr></thead><tbody id="finRows"></tbody></table></div>
@@ -848,7 +852,7 @@ async function flush(key,retried){
 async function connect(){
   if(inClaude)return connectClaude();
   if(supaConfigured())await startSupabase();else setSync('local');
-  loadNews();refreshCals();
+  loadNews();refreshCals();if(!SBUID)renderKalshi(supaConfigured()?'signedout':undefined);
 }
 function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`))return res();const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=()=>rej(new Error('Could not load a needed file. Check your connection and try again.'));document.head.appendChild(el);});}
 async function startSupabase(){
@@ -868,7 +872,7 @@ async function pullRemote(){
   if(error){setSync('error');return;}
   if(!data.length&&hadLocal){for(const k of KEYS)flush(k);}
   data.forEach(r=>{if(KEYS.includes(r.key)){try{S[r.key]=JSON.parse(r.json);}catch(e){}}});
-  saveLocal();renderAll();setSync('ok');if(calsAt)refreshCals();
+  saveLocal();renderAll();setSync('ok');if(calsAt)refreshCals();loadKalshi();
 }
 function updateAcct(){const b=$('#acctBtn');b.textContent=SBUID?'Sign out':'Sign in';}
 const aMsg=t=>{$('#aMsg').textContent=t;};
@@ -2017,6 +2021,53 @@ $('#importPreview').addEventListener('click',e=>{
     document.getElementById('finRows').scrollIntoView({behavior:'smooth',block:'start'});}
 });
 
+
+/* ---------- Kalshi (website only, via Supabase function) ---------- */
+let KAL=null;try{KAL=JSON.parse(localStorage.getItem(LS+'.kalshi')||'null');}catch(e){}
+const cents=c=>usd((+c||0)/100);
+function kalshiDeposits(){
+  const m=S.money.filter(t=>/kalshi/i.test(t.desc||''));
+  const dep=m.filter(t=>t.kind==='exp').reduce((a,t)=>a+t.amt,0),wd=m.filter(t=>t.kind==='inc').reduce((a,t)=>a+t.amt,0);
+  return {dep,wd,n:m.length};
+}
+function renderKalshi(state){
+  const el=$('#kalshiBody');if(!el)return;
+  if(inClaude||!supaConfigured()){$('#kalshiCard').hidden=true;return;}
+  if(state==='signedout'){el.innerHTML='<p class="muted small">Sign in to see your Kalshi account.</p>';return;}
+  if(state==='loading'&&!KAL){el.innerHTML='<p class="muted small">Loading your Kalshi account…</p>';return;}
+  const k=KAL;
+  if(k&&k.error==='not_configured'){el.innerHTML=`<p class="small">Almost connected. Add your Kalshi API key to Supabase to finish:</p>
+    <ol class="small muted" style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+    <li>On kalshi.com, open <b>Account &amp; security → API Keys</b> and click <b>Create new API key</b>. Download the private key file and copy the <b>Key ID</b>.</li>
+    <li>In Supabase, open <b>Edge Functions → Secrets</b> for your life-tracker project.</li>
+    <li>Add a secret named <b>KALSHI_KEY_ID</b> with your Key ID.</li>
+    <li>Add a secret named <b>KALSHI_PRIVATE_KEY</b> and paste the entire contents of the private key file, including the BEGIN and END lines.</li>
+    <li>Come back here and tap Refresh.</li></ol>`;return;}
+  if(k&&k.error){el.innerHTML=`<p class="small" style="color:var(--bad)">${esc(k.error)}</p>`;return;}
+  if(!k){el.innerHTML='<p class="muted small">No Kalshi data yet. Tap Refresh.</p>';return;}
+  const T=k.totals||{},d=kalshiDeposits(),total=(k.balance+k.portfolio_value)/100,net=total-(d.dep-d.wd);
+  const pl=T.profit||0;
+  el.innerHTML=`<div class="tiles">
+    <div class="tile"><b style="font-size:22px">${cents(k.balance)}</b><span>cash in Kalshi</span></div>
+    <div class="tile"><b style="font-size:22px">${cents(k.portfolio_value)}</b><span>in open bets</span></div>
+    <div class="tile"><b style="font-size:22px"><em style="font-style:normal;color:${pl>=0?'var(--good)':'var(--bad)'}">${pl<0?'−':'+'}${cents(Math.abs(pl))}</em></b><span>profit/loss on settled bets</span></div>
+    <div class="tile"><b style="font-size:22px">${T.wins||0}–${T.losses||0}</b><span>won–lost markets${T.count?` (${Math.round(100*(T.wins||0)/Math.max(1,(T.wins||0)+(T.losses||0)))}% won)`:''}</span></div></div>
+  <div class="calc-out small">${d.n?`<div>Put in from your bank: <b class="num">${usd(d.dep)}</b>${d.wd?` · taken out: <b class="num">${usd(d.wd)}</b>`:''}</div><div>Kalshi account worth now: <b class="num">${usd(total)}</b> → overall <b class="num" style="color:${net>=0?'var(--good)':'var(--bad)'}">${net<0?'down':'up'} ${usd(Math.abs(net))}</b></div>`:`<div>Money you've put in shows here once transactions with "Kalshi" in the description are in your Finance list (add them or import a bank statement).</div>`}
+  <div class="muted">Spent on settled bets: ${cents(T.cost)} · paid out: ${cents(T.revenue)}${T.fees?` · fees: ${cents(T.fees)}`:''} · updated ${new Date(k.updated).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</div></div>
+  ${(k.recent||[]).length?`<h3 style="margin-top:4px">Recently settled</h3><ul class="list">${k.recent.slice(0,10).map(r=>`<li><span class="pill num">${r.time?fmtDate(String(r.time).slice(0,10),{month:'short',day:'numeric'}):''}</span><span class="small" style="flex:1;overflow-wrap:anywhere">${esc(r.ticker)}${r.result?` <span class="muted">· ${esc(r.result)}</span>`:''}</span><span class="num small ${r.profit>=0?'amt-inc':'amt-exp'}">${r.profit<0?'−':'+'}${cents(Math.abs(r.profit))}</span></li>`).join('')}</ul>`:''}`;
+}
+async function loadKalshi(){
+  if(inClaude||!supaConfigured()){renderKalshi();return;}
+  if(!SB||!SBUID){renderKalshi('signedout');return;}
+  renderKalshi('loading');
+  try{const {data:{session}}=await SB.auth.getSession();
+    const r=await fetch(SUPA_URL+'/functions/v1/kalshi',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+(session?session.access_token:SUPA_KEY)}});
+    const j=await r.json();KAL=j;if(!j.error)try{localStorage.setItem(LS+'.kalshi',JSON.stringify(j));}catch(e){}
+  }catch(e){KAL={error:'Could not reach Kalshi right now. Try Refresh in a minute.'};}
+  renderKalshi();
+}
+$('#kRefresh').addEventListener('click',loadKalshi);
+
 /* ---------- NEWS ---------- */
 const OUTLETS=[
  ['AP News','https://apnews.com','Wire service; straight, fast reporting'],
@@ -2072,7 +2123,7 @@ $('#loadData').addEventListener('click',()=>{
 });
 
 /* ---------- boot ---------- */
-function renderAll(){applySkin();renderProductivity();renderMethodChips();if(!T.running)resetTimer();renderCalc();renderCards();renderSessions();renderTodos();renderCalendar();renderAllGym();fillCatSelect();renderFinance();renderSleep();}
+function renderAll(){applySkin();renderProductivity();renderMethodChips();if(!T.running)resetTimer();renderCalc();renderCards();renderSessions();renderTodos();renderCalendar();renderAllGym();fillCatSelect();renderFinance();renderSleep();if(KAL)renderKalshi();}
 (function init(){
   const n=new Date();$('#pcStart').value=`${pad(n.getHours())}:${pad(n.getMinutes())}`;$('#mDate').value=today();$('#rDate').value=today();$('#tnDate').value=today();$('#fDate').value=today();$('#slDate').value=defaultNight();
   renderAll();route();setSync('local');connect();loadFacts();
